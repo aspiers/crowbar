@@ -4,20 +4,7 @@
 # crowbar rpm from the SUSE Cloud ISO.  In that context, it is
 # expected that all other required repositories (SP2, Updates, etc.)
 # are already set up, and a lot of the required files will already be
-# in the right place.  However if you want to test setup on a vanilla
-# SLES system, you can follow the manual steps below:
-#
-# 0. export CROWBAR_TESTING=true
-# 1. Copy all barclamps to /opt/dell/barclamps
-#    You'll want:
-#      crowbar database deployer dns glance ipmi keystone logging
-#      nagios network nova nova_dashboard ntp openstack
-#      provisioner swift
-# 2. Copy extra/barclamp* to /opt/dell/bin/
-# 4. You should probably set eth0 to be static IP 192.168.124.10/24.
-# 5. rsync the Devel:Cloud, SLES-11-SP2-LATEST, SLE-11-SP2-SDK-LATEST,
-#    and possibly other repos into locations under /srv/tftpboot -
-#    see https://github.com/SUSE/cloud/wiki/Crowbar for details.
+# in the right place.
 
 LOGFILE=/var/log/chef/install.log
 
@@ -128,50 +115,9 @@ CROWBAR=/opt/dell/bin/crowbar
 for repo in suse-11.2/install repos/Cloud; do
     repo=/srv/tftpboot/$repo
     if ! [ -e $repo/content.asc ] && ! [ -e $repo/repodata/repomd.xml.asc ]; then
-        if [ -n "$CROWBAR_TESTING" ]; then
-            die "$repo has not been set up yet; please see https://github.com/SUSE/cloud/wiki/Crowbar"
-        else
-            die "$repo has not been set up yet; please check you didn't miss a step in the installation guide."
-        fi
+        die "$repo has not been set up yet; please check you didn't miss a step in the installation guide."
     fi
 done
-
-if [ -n "$CROWBAR_TESTING" ]; then
-    # This is supposed to go away once the Chef dependencies are included in the
-    # add-on image.  Note that SP1 is required for rubygem-haml at least, but
-    # the new maintenance model requires SP1 repos alongside SP2 anyway.
-    zypper ar    http://dist.suse.de/install/SLP/SLES-11-SP2-GM/x86_64/DVD1 sp2
-    zypper ar    http://dist.suse.de/install/SLP/SLE-11-SP2-SDK-GM/x86_64/DVD1/ sdk-sp2
-    zypper ar    http://dist.suse.de/ibs/SUSE:/SLE-11-SP1:/GA/standard/ sp1-ga
-    zypper ar    http://dist.suse.de/ibs/SUSE:/SLE-11-SP2:/GA/standard/ sp2-ga
-    zypper ar -f http://dist.suse.de/ibs/SUSE:/SLE-11-SP1:/Update/standard/ sp1-update
-    zypper ar -f http://dist.suse.de/ibs/SUSE:/SLE-11-SP2:/Update/standard/ sp2-update
-    zypper ar -f http://dist.suse.de/ibs/Devel:/Cloud/SLE_11_SP2/ cloud
-
-    # install chef and its dependencies
-    zypper --gpg-auto-import-keys in rubygem-chef-server rubygem-chef rabbitmq-server couchdb java-1_6_0-ibm rubygem-activesupport
-
-    # also need these (crowbar dependencies):
-    zypper in rubygem-kwalify rubygem-ruby-shadow tcpdump
-
-    # Need this for provisioner to work:
-    mkdir -p /srv/tftpboot/discovery/pxelinux.cfg
-    cat > /srv/tftpboot/discovery/pxelinux.cfg/default <<EOF
-DEFAULT pxeboot
-TIMEOUT 20
-PROMPT 0
-LABEL pxeboot
-        KERNEL vmlinuz0
-        APPEND initrd=initrd0.img root=/sledgehammer.iso rootfstype=iso9660 rootflags=loop
-ONERROR LOCALBOOT 0
-EOF
-
-    # You'll also need:
-    #   /srv/tftpboot/discovery/initrd0.img
-    #   /srv/tftpboot/discovery/vmlinuz0
-    # These can be obtained from a sleshammer image or from an existing
-    # ubuntu admin node.
-fi
 
 chkconfig rabbitmq-server on
 ensure_service_running rabbitmq-server '^Node .+ with Pid [0-9]+: running'
@@ -408,7 +354,6 @@ ip addr | grep -q $IP || {
 
 # Run tests -- currently the host will run this.
 # 2012-05-24: test is failing, so only run if CROWBAR_RUN_TESTS=true
-# (this is distinct from CROWBAR_TESTING, which would add extra repos etc.)
 if [ -n "$CROWBAR_RUN_TESTS" ]; then
     /opt/dell/bin/barclamp_test.rb -t || \
         die "Crowbar validation has errors! Please check the logs and correct."
