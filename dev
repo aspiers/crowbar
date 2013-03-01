@@ -3964,8 +3964,7 @@ setup_test_env() (
         esac
     done
     test_prereqs_installed || exit 1
-    rm -rf "$CROWBAR_TEST_DIR"
-    mkdir "$CROWBAR_TEST_DIR"
+    mkdir -p "$CROWBAR_TEST_DIR"
     reinstall_barclamps "${barclamps[@]}" || exit 1
     cd "$CROWBAR_TEST_DIR"
     if [[ $update_gem_cache = true ]]; then
