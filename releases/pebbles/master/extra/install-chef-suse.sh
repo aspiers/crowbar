@@ -310,20 +310,22 @@ json_read () {
 
 if [ -f /etc/crowbar/provisioner.json ]; then
     PROVISIONER_JSON=/etc/crowbar/provisioner.json
-elif [ -n "$CROWBAR_FROM_GIT" ]; then
+elif [ -n "$CROWBAR_FROM_GIT" -a -f /root/crowbar/provisioner.json ]; then
     PROVISIONER_JSON=/root/crowbar/provisioner.json
 fi
-for repo in SLE-Cloud
-            SLE-Cloud-PTF
-            SUSE-Cloud-2.0-Pool
-            SUSE-Cloud-2.0-Updates
-            SLES11-SP3-Pool
-            SLES11-SP3-Updates
-do
-    if test -n "`json_read $PROVISIONER_JSON attributes.provisioner.suse.autoyast.repos.${repo//./\\\\.}.url`"; then
-        REPOS_SKIP_CHECKS+=" ${repo#SLE-}"
-    fi
-done
+if [ -n "$PROVISIONER_JSON" ]; then
+  for repo in SLE-Cloud \
+              SLE-Cloud-PTF \
+              SUSE-Cloud-2.0-Pool \
+              SUSE-Cloud-2.0-Updates \
+              SLES11-SP3-Pool \
+              SLES11-SP3-Updates
+  do
+      if test -n "`json_read $PROVISIONER_JSON attributes.provisioner.suse.autoyast.repos.${repo//./\\\\.}.url`"; then
+          REPOS_SKIP_CHECKS+=" ${repo#SLE-}"
+      fi
+  done
+fi
 
 if [ -n "$IPv4_addr" ]; then
     echo "$FQDN resolved to IPv4 address: $IPv4_addr"
