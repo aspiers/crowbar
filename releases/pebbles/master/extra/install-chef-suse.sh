@@ -293,7 +293,7 @@ if [ -z "$IPv4_addr" -a -z "$IPv6_addr" ]; then
 fi
 
 if [ -n "$CROWBAR_FROM_GIT" ]; then
-    REPOS_SKIP_CHECKS+=" SLES11-SP3-Pool SLES11-SP3-Updates SUSE-Cloud-2.0-Pool SUSE-Cloud-2.0-Updates"
+    REPOS_SKIP_CHECKS+=" SLES11-SP3-Updates SUSE-Cloud-2.0-Pool SUSE-Cloud-2.0-Updates"
     zypper in rubygems rubygem-json createrepo
 fi
 
@@ -318,7 +318,6 @@ if [ -n "$PROVISIONER_JSON" ]; then
               SLE-Cloud-PTF \
               SUSE-Cloud-2.0-Pool \
               SUSE-Cloud-2.0-Updates \
-              SLES11-SP3-Pool \
               SLES11-SP3-Updates
   do
       if test -n "`json_read $PROVISIONER_JSON attributes.provisioner.suse.autoyast.repos.${repo//./\\\\.}.url`"; then
@@ -508,7 +507,6 @@ else
     fi
 fi
 
-check_repo_product SLES11-SP3-Pool        'SUSE Linux Enterprise Server 11 SP3'
 check_repo_product SLES11-SP3-Updates     'SUSE Linux Enterprise Server 11 SP3'
 check_repo_product SUSE-Cloud-2.0-Pool    'SUSE Cloud 2.0'
 check_repo_product SUSE-Cloud-2.0-Updates 'SUSE Cloud 2.0'
