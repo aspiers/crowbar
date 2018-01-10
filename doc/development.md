@@ -27,7 +27,7 @@ compare the differences:
 
   1. __Regular SUSE OpenStack Cloud install__. Runs on standard http port
      (http://HOSTNAME) and from the `/opt/dell` directory.
-  2. __From Git upstream branding__. Runs on [port 5000]
+  2. __From Git upstream branding__. Runs on port 5000
      (http://HOSTNAME:5000) and from the `/opt/crowbar` directory.
 
 All are using the same default username and password, both `crowbar`. The
