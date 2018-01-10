@@ -30,7 +30,7 @@ compare the differences:
   2. __From Git upstream branding__. Runs on [port 5000]
      (http://HOSTNAME:5000) and from the `/opt/crowbar` directory.
 
-All are using the same default username and password, both ```crowbar```. The
+All are using the same default username and password, both `crowbar`. The
 following sections will describe in detail how each of these are setup and
 configured.
 
@@ -38,9 +38,9 @@ configured.
 
 Before we can start you need to match some prerequirements on your host machine.
 
-  1. Please create this script somewhere in your path, it's just a wrapper
+  1. Please create this script somewhere in your path; it's just a wrapper
      around our mkcloud script that will be mentioned later on again. We place
-     it in general at /usr/local/bin/mkcloud7
+     it in general at `/usr/local/bin/mkcloud7`:
 
      ```bash
      #!/usr/bin/env bash
@@ -55,30 +55,28 @@ Before we can start you need to match some prerequirements on your host machine.
   2. At first you need a running mkcloud setup. For more information about this
      read the [mkcloud](https://git.io/vYO2E) documentation. Please use the
      wrapper script created above to install Crowbar, e.g. `sudo mkcloud7 plain devsetup`.
-     the ```devsetup``` step for ```mkcloud``` is necessary to install the dependencies
+     the `devsetup` step for `mkcloud` is necessary to install the dependencies
 
   3. You need some ruby environment on your workstation in order to execute some
-     rake tasks, so please install ```ruby``` and ```bundler``` first.
+     rake tasks, so please install `ruby` and `bundler` first.
 
   4. You need to clone all repositories from GitHub. There are rake tasks for
      cloning, forking and updating all required repositories. Make sure to get
-     all the dependencies with ```bundle install``` and use ```rake -T``` to get
+     all the dependencies with `bundle install` and use `rake -T` to get
      an overview about the rake tasks.
-     For the ```rake``` tasks talk to the GitHub API you need to have a ```~/.netrc``` file
+     For the `rake` tasks talk to the GitHub API you need to have a `~/.netrc` file
      which looks like:
 
-     ```
-     machine api.github.com
-       login <GITHUB USERNAME>
-       password <API TOKEN>
-     ```
+         machine api.github.com
+           login <GITHUB USERNAME>
+           password <API TOKEN>
 
      The GitHub API Token can be obtained from your GitHub settings in the Browser.
 
-     1. ```rake crowbar:init``` will fork, clone and add the required remotes to the
+     1. `rake crowbar:init` will fork, clone and add the required remotes to the
         required repositories defined within our [configuration](../config/barclamps.yml)
         within [barclamps/](../barclamps/)
-     2. ```rake crowbar:update``` will update the clones, this should be performed from time
+     2. `rake crowbar:update` will update the clones, this should be performed from time
         to time to get the latest changes into your cloned repositories.
 
   5. Now run Guard to sync your local git repos with the server, please place this script in
@@ -130,9 +128,9 @@ Before we can start you need to match some prerequirements on your host machine.
     ssh -t root@${cloud} "$targetdir/crowbar_framework/bin/rails s -b 0.0.0.0 -p $port"
     ```
 
-    and run it in a seperate terminal window as this process will stay in the foreground.
+     and run it in a seperate terminal window as this process will stay in the foreground.
 
-  7. Now you can access you crowbar development setup via ```http://your.crowbar.instance:5000```
+  7. Now you can access you crowbar development setup via `http://your.crowbar.instance:5000`
 
 ## Debugging
 
@@ -141,16 +139,12 @@ also mentioned in the `Gemfile`
 
 To set it up you have to make sure `byebug` is installed
 
-```bash
-which byebug
-```
+    which byebug
 
 if it is not installed yet you can find the package in the `sdk` repository:
 
-```bash
-zypper ar -f http://dist.suse.de/install/SLP/SLE-12-SP2-SDK-LATEST/x86_64/DVD1/ sle12-sp2-sdk
-zypper -n install ruby2.1-rubygem-byebug
-```
+    zypper ar -f http://dist.suse.de/install/SLP/SLE-12-SP2-SDK-LATEST/x86_64/DVD1/ sle12-sp2-sdk
+    zypper -n install ruby2.1-rubygem-byebug
 
 Then you just have to add a `byebug` at the line of code that you want the
 debugger to stop, and run the action that leads you to this codepath.
@@ -158,13 +152,11 @@ debugger to stop, and run the action that leads you to this codepath.
 `byebug` works similar to gdb, for a reference of available commands see
 https://github.com/deivid-rodriguez/byebug#byebugs-commands
 
-```
-   43:   def index
-   44:     byebug
-=> 45:     @sum = 0
-   46:     @groups = {}
-   47:     session[:node] = params[:name]
-   48:     if params.key?(:role)
-   49:       result = NodeObject.all
-(byebug)
-```
+       43:   def index
+       44:     byebug
+    => 45:     @sum = 0
+       46:     @groups = {}
+       47:     session[:node] = params[:name]
+       48:     if params.key?(:role)
+       49:       result = NodeObject.all
+    (byebug)
